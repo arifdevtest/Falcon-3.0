@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#2a5078">
+<title>Falcon</title>
+<style>
+:root{--navy:#2a5078;--bg:#e9eef6;--card:#fff;--field:#f5f6fa;--peach:#ffb0a0;--orange:#ffab5e;--mint:#4cc9a0;--text:#1f2d5c;--muted:#8a93ad;--radius:20px}
+*{box-sizing:border-box;margin:0;font-family:sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh}
+button{cursor:pointer}
+.page{display:none;padding-bottom:30px;min-height:100vh}
+.page.active{display:block}
+
+.header{background:var(--navy);color:#fff;padding:30px 24px 50px;border-radius:0 0 var(--radius) var(--radius)}
+.header .back{background:transparent;border:none;color:#fff;font-size:15px;opacity:.85;padding:0}
+.header h1{font-size:26px;margin-top:10px}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin:14px 16px 0;box-shadow:0 6px 20px rgba(42,80,120,.08)}
+.pull{margin-top:-28px}
+label{display:block;font-size:14px;margin:12px 0 6px}
+input,select{width:100%;background:var(--field);border:none;border-radius:14px;padding:14px;font-size:16px;color:var(--text);caret-color:#000;outline:none}
+.muted{color:var(--muted);font-size:13px;margin-top:4px}
+.row{display:flex;gap:10px}
+.row>div{flex:1}
+.btn{width:100%;margin-top:16px;border:none;border-radius:var(--radius);padding:14px;font-size:16px;font-weight:bold;color:#fff;background:var(--peach)}
+.btn.green{background:var(--mint)}
+.btn.orange{background:var(--orange)}
+.btn.navy{background:var(--navy)}
+.small{border:none;border-radius:12px;padding:9px 13px;font-size:13px;color:#fff;background:var(--mint);margin-left:4px}
+.small.del{background:var(--peach)}
+.title{margin:22px 20px 0;font-weight:bold}
+.empty{text-align:center;color:var(--muted);padding:30px 16px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pass-box{position:relative}
+.pass-box input{padding-right:50px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;margin:0;padding:0;background:transparent;border:none;border-radius:12px;font-size:20px;line-height:40px;color:var(--text)}
+.msg{font-size:14px;margin-top:12px;min-height:18px;color:#e0566f;line-height:1.5}
+.msg.ok{color:#2aa57f}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.cname{font-size:17px;font-weight:bold;margin-top:2px}
+.ctotal{font-size:18px;font-weight:bold;white-space:nowrap}
+.btns{display:flex;gap:8px;margin-top:14px}
+.btns button{flex:1;border:none;border-radius:14px;padding:12px 4px;font-size:14px;font-weight:bold;color:#fff}
+.b-edit,.b-print{background:var(--mint)}
+.b-del{background:var(--peach)}
+.b-view{background:var(--navy)}
+
+.hero{background:var(--navy);color:#fff;padding:70px 24px 60px;border-radius:0 0 var(--radius) var(--radius);text-align:center}
+.hero h1{font-family:"Brush Script MT","Segoe Script","Lucida Handwriting","Apple Chancery",cursive;font-size:56px;font-weight:normal;letter-spacing:2px;text-shadow:0 4px 12px rgba(0,0,0,.25)}
+.card.login{padding:20px;box-shadow:0 8px 24px rgba(42,80,120,.12)}
+.card.login .btn{margin-top:22px;padding:15px;font-size:17px}
+.forgot{display:block;width:100%;text-align:center;margin-top:18px;background:transparent;border:none;color:var(--navy);font-size:15px;font-weight:bold;padding:8px}
+
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;padding:40px 24px 60px}
+.dhead h1{margin-top:0;font-size:30px}
+.dhead p{opacity:.8;margin-top:6px}
+.logout{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:14px;padding:10px 16px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 16px;margin-top:-30px}
+.tile{background:var(--card);border:none;border-radius:var(--radius);padding:22px 12px;text-align:center;color:var(--text);box-shadow:0 8px 24px rgba(42,80,120,.1);font-size:15px;font-weight:bold}
+.tic{width:54px;height:54px;border-radius:18px;background:var(--peach);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.tile.alt .tic{background:var(--orange)}
+.tile.wide{grid-column:span 2}
+
+.qctl{display:flex;align-items:center;gap:8px;margin-top:10px}
+.qctl button{width:34px;height:34px;border:none;border-radius:12px;background:var(--field);color:var(--text);font-size:18px}
+.qctl span{min-width:24px;text-align:center;font-weight:bold}
+.line{font-weight:bold;white-space:nowrap}
+.sum{display:flex;justify-content:space-between;margin-top:10px;font-size:15px}
+.sum.big{font-size:20px;font-weight:bold;margin-top:14px}
+.obtns{display:flex;gap:10px;margin:18px 16px 0}
+.obtns button{flex:1;border:none;border-radius:var(--radius);padding:15px;font-size:16px;font-weight:bold;color:#fff}
+.o-draft{background:var(--orange)}
+.o-place{background:var(--peach)}
+
+.search{margin:-28px 16px 0}
+.search input{background:var(--card);border-radius:var(--radius);padding:15px;box-shadow:0 6px 20px rgba(42,80,120,.1)}
+.ono{font-size:13px;color:var(--orange);font-weight:bold}
+.detail{margin-top:12px;border-top:1px solid var(--field);padding-top:8px}
+.drow{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 0}
+.drow.bold{font-weight:bold}
+
+.sbox{background:var(--card);border-radius:var(--radius);margin:14px 16px 0;box-shadow:0 6px 20px rgba(42,80,120,.08);overflow:hidden}
+.sbox.pull{margin-top:-28px}
+.shead{display:flex;align-items:center;gap:14px;padding:18px 16px;cursor:pointer}
+.sic{width:46px;height:46px;border-radius:16px;background:var(--peach);display:flex;align-items:center;justify-content:center;font-size:22px}
+.sic.o{background:var(--orange)}
+.sic.m{background:var(--mint)}
+.shead b{flex:1;font-size:17px}
+.arrow{color:var(--muted);font-size:18px;transition:transform .2s}
+.sbody{display:none;padding:0 16px 18px}
+.sbox.open .sbody{display:block}
+.sbox.open .arrow{transform:rotate(90deg)}
+.note{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+.about div{padding:10px 0;border-bottom:1px solid var(--field);font-size:15px}
+.about div:last-child{border-bottom:none}
+.about span{color:var(--muted);display:block;font-size:12px;margin-bottom:2px}
+.about a{color:var(--navy);text-decoration:none;font-weight:bold}
+
+#toast{display:none;position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1f2d5c;color:#fff;padding:12px 20px;border-radius:var(--radius);font-size:14px;z-index:100;max-width:85%;text-align:center}
+#installBar{display:none;position:fixed;left:16px;right:16px;bottom:16px;background:var(--navy);color:#fff;border-radius:var(--radius);padding:12px 14px;align-items:center;gap:10px;z-index:90;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#installBar span{flex:1;font-size:14px}
+#installBar button{border:none;border-radius:14px;padding:10px 16px;font-size:14px;font-weight:bold;color:#fff;background:var(--peach)}
+#installBar button.x{background:transparent;padding:10px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="page" id="pg-login">
+  <div class="hero"><h1>Welcome!</h1></div>
+  <div class="card login pull">
+    <label>Username</label>
+    <input id="lg-u" type="text" autocomplete="off">
+    <label>Password</label>
+    <div class="pass-box">
+      <input id="lg-p" type="password">
+      <button type="button" class="eye" onclick="eyeToggle('lg-p',this)">👁</button>
+    </div>
+    <div class="msg" id="lg-msg"></div>
+    <button class="btn" onclick="login()">Login</button>
+    <button type="button" class="forgot" onclick="forgotPass()">Forgot Password?</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="pg-dashboard">
+  <div class="header dhead">
+    <div><h1>Falcon</h1><p>Dashboard</p></div>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+  <div class="grid">
+    <button class="tile" onclick="show('neworder')"><div class="tic">➕</div>New Order</button>
+    <button class="tile alt" onclick="show('draft')"><div class="tic">📝</div>Draft Order</button>
+    <button class="tile alt" onclick="show('history')"><div class="tic">🕘</div>Order History</button>
+    <button class="tile" onclick="show('products')"><div class="tic">📦</div>Manage Products</button>
+    <button class="tile wide" onclick="show('settings')"><div class="tic">⚙️</div>Settings</button>
+  </div>
+</div>
+
+<!-- MANAGE PRODUCTS -->
+<div class="page" id="pg-products">
+  <div class="header"><button class="back" onclick="show('dashboard')">← Back</button><h1>Manage Products</h1></div>
+  <div class="card pull">
+    <label>Product Name</label>
+    <input id="pr-name" type="text" autocomplete="off">
+    <div class="row">
+      <div><label>TP + Vat</label><input id="pr-tp" type="number" inputmode="decimal"></div>
+      <div><label>MRP</label><input id="pr-mrp" type="number" inputmode="decimal"></div>
+    </div>
+    <button class="btn" id="pr-save" onclick="prSave()">Save Product</button>
+  </div>
+  <div class="title">Products</div>
+  <div id="pr-list"></div>
+</div>
+
+<!-- NEW ORDER -->
+<div class="page" id="pg-neworder">
+  <div class="header"><button class="back" onclick="show('dashboard')">← Back</button><h1>New Order</h1></div>
+  <div class="card pull">
+    <label>Customer Name</label>
+    <input id="no-cust" type="text" autocomplete="off">
+    <label>Product</label>
+    <select id="no-prod"></select>
+    <label>Quantity</label>
+    <input id="no-qty" type="number" inputmode="numeric" value="1" min="1">
+    <button class="btn green" onclick="noAdd()">+ Add Item</button>
+  </div>
+  <div class="title">Items</div>
+  <div id="no-items"></div>
+  <div class="card">
+    <div class="sum"><span>Subtotal</span><span id="no-sub">0.00</span></div>
+    <label>Discount (%)</label>
+    <input id="no-disc" type="number" inputmode="decimal" value="0" min="0" max="100" oninput="noCalc()">
+    <div class="sum"><span>Discount Amount</span><span id="no-damt">0.00</span></div>
+    <div class="sum big"><span>Total</span><span id="no-tot">0.00</span></div>
+  </div>
+  <div class="obtns">
+    <button class="o-draft" onclick="noSaveDraft()">Save Draft</button>
+    <button class="o-place" onclick="noPlace()">Place Order</button>
+  </div>
+</div>
+
+<!-- DRAFT ORDER -->
+<div class="page" id="pg-draft">
+  <div class="header"><button class="back" onclick="show('dashboard')">← Back</button><h1>Draft Order</h1></div>
+  <div id="dr-list" class="pull"></div>
+</div>
+
+<!-- ORDER HISTORY -->
+<div class="page" id="pg-history">
+  <div class="header"><button class="back" onclick="show('dashboard')">← Back</button><h1>Order History</h1></div>
+  <div class="search"><input id="oh-q" type="text" placeholder="Search customer or order no." oninput="ohRender()" autocomplete="off"></div>
+  <div id="oh-list"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="pg-settings">
+  <div class="header"><button class="back" onclick="show('dashboard')">← Back</button><h1>Settings</h1></div>
+
+  <div class="sbox pull" id="st-b1">
+    <div class="shead" onclick="stToggle('st-b1')"><div class="sic">🔒</div><b>Change Password</b><span class="arrow">›</span></div>
+    <div class="sbody">
+      <label>Current Password</label>
+      <div class="pass-box"><input id="st-cur" type="password"><button type="button" class="eye" onclick="eyeToggle('st-cur',this)">👁</button></div>
+      <label>New Password</label>
+      <div class="pass-box"><input id="st-nw" type="password"><button type="button" class="eye" onclick="eyeToggle('st-nw',this)">👁</button></div>
+      <label>Confirm New Password</label>
+      <div class="pass-box"><input id="st-cf" type="password"><button type="button" class="eye" onclick="eyeToggle('st-cf',this)">👁</button></div>
+      <div class="msg" id="st-pmsg"></div>
+      <button class="btn" onclick="stChangePass()">Save Password</button>
+    </div>
+  </div>
+
+  <div class="sbox" id="st-b2">
+    <div class="shead" onclick="stToggle('st-b2')"><div class="sic m">💾</div><b>Backup</b><span class="arrow">›</span></div>
+    <div class="sbody">
+      <button class="btn green" onclick="stExport(false)">Export Backup (choose location)</button>
+      <div class="note">Opens the save / share menu so you can pick where to put the file (Files, Drive, etc.).</div>
+      <button class="btn navy" onclick="stExport(true)">Download to Phone</button>
+      <div class="note">Saves the file directly into your Downloads folder.</div>
+      <button class="btn orange" onclick="$('st-file').click()">Import / Restore Backup</button>
+      <div class="note">Pick a backup file from your phone storage. This replaces the current data.</div>
+      <input type="file" id="st-file" accept=".json,application/json" style="display:none" onchange="stImport(this)">
+      <div class="note" id="st-last"></div>
+      <div class="msg" id="st-bmsg"></div>
+    </div>
+  </div>
+
+  <div class="sbox" id="st-b3">
+    <div class="shead" onclick="stToggle('st-b3')"><div class="sic o">ℹ️</div><b>About</b><span class="arrow">›</span></div>
+    <div class="sbody about">
+      <div><span>Developer</span>Arif</div>
+      <div><span>E-mail</span><a href="mailto:arif.islambd2012@gmail.com">arif.islambd2012@gmail.com</a></div>
+      <div><span>Call</span><a href="tel:+8801625032862">+880 1625 032862</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="installBar"><span>Install Falcon on your phone</span><button onclick="doInstall()">Install</button><button class="x" onclick="hideInstall()">✕</button></div>
+
+<script>
+/* ================= INSTALL (PWA) ================= */
+var deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", function (e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!sessionStorage.getItem("falcon_hide_install")) document.getElementById("installBar").style.display = "flex";
+});
+window.addEventListener("appinstalled", function () { hideInstall(); });
+function doInstall() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function () { deferredPrompt = null; hideInstall(); });
+}
+function hideInstall() {
+  document.getElementById("installBar").style.display = "none";
+  try { sessionStorage.setItem("falcon_hide_install", "1"); } catch (e) {}
+}
+function makeIcon(size) {
+  var c = document.createElement("canvas");
+  c.width = size; c.height = size;
+  var x = c.getContext("2d");
+  x.fillStyle = "#2a5078"; x.fillRect(0, 0, size, size);
+  x.fillStyle = "#ffb0a0"; x.beginPath(); x.arc(size / 2, size / 2, size * 0.34, 0, Math.PI * 2); x.fill();
+  x.fillStyle = "#ffffff"; x.font = "bold " + Math.round(size * 0.42) + "px sans-serif";
+  x.textAlign = "center"; x.textBaseline = "middle";
+  x.fillText("F", size / 2, size / 2 + size * 0.02);
+  return c.toDataURL("image/png");
+}
+function setupPWA() {
+  var web = location.protocol === "https:" || location.protocol === "http:";
+  if (!web) return;
+  try {
+    var base = location.href.split("#")[0].split("?")[0];
+    var manifest = {
+      name: "Falcon", short_name: "Falcon",
+      start_url: base, scope: base.replace(/[^\/]*$/, ""),
+      display: "standalone", orientation: "portrait",
+      background_color: "#e9eef6", theme_color: "#2a5078",
+      icons: [
+        { src: makeIcon(192), sizes: "192x192", type: "image/png", purpose: "any" },
+        { src: makeIcon(512), sizes: "512x512", type: "image/png", purpose: "any" },
+        { src: makeIcon(512), sizes: "512x512", type: "image/png", purpose: "maskable" }
+      ]
+    };
+    var link = document.createElement("link");
+    link.rel = "manifest";
+    link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" }));
+    document.head.appendChild(link);
+    var ic = document.createElement("link");
+    ic.rel = "icon"; ic.href = makeIcon(192);
+    document.head.appendChild(ic);
+  } catch (e) {}
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  }
+}
+setupPWA();
+
+/* ================= COMMON ================= */
+function $(id) { return document.getElementById(id); }
+function load(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
+function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+function money(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+function pad(n) { return ("0" + n).slice(-2); }
+function el(tag, cls, text) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function setMsg(id, text, ok) {
+  var e = $(id);
+  e.textContent = text;
+  e.className = "msg" + (ok ? " ok" : "");
+}
+function eyeToggle(id, btn) {
+  var f = $(id);
+  if (f.type === "password") { f.type = "text"; btn.textContent = "🙈"; }
+  else { f.type = "password"; btn.textContent = "👁"; }
+}
+var toastTimer;
+function toast(text) {
+  var e = $("toast");
+  e.textContent = text;
+  e.style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { e.style.display = "none"; }, 3500);
+}
+
+/* Login lasts only while the app is open (cleared when the app is closed) */
+try { localStorage.removeItem("falcon_logged"); } catch (e) {}
+function isLogged() { return sessionStorage.getItem("falcon_logged") === "1"; }
+
+/* Save / share / download a file */
+async function saveBlob(blob, name, mime, forceDownload) {
+  if (!forceDownload) {
+    if (window.showSaveFilePicker) {
+      try {
+        var ext = name.slice(name.lastIndexOf("."));
+        var acc = {}; acc[mime] = [ext];
+        var h = await window.showSaveFilePicker({ suggestedName: name, types: [{ description: "File", accept: acc }] });
+        var w = await h.createWritable();
+        await w.write(blob);
+        await w.close();
+        return "saved";
+      } catch (e) {
+        if (e && e.name === "AbortError") return "cancelled";
+      }
+    }
+    try {
+      var file = new File([blob], name, { type: mime });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: name });
+        return "shared";
+      }
+    } catch (e) {
+      if (e && e.name === "AbortError") return "cancelled";
+    }
+  }
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  return forceDownload ? "downloaded" : "fallback";
+}
+
+/* ================= NAVIGATION ================= */
+var PAGES = ["login", "dashboard", "products", "neworder", "draft", "history", "settings"];
+var hooks = {};
+
+function show(name, mode) {
+  if (!isLogged()) name = "login";
+  else if (name === "login") name = "dashboard";
+  PAGES.forEach(function (p) { $("pg-" + p).classList.remove("active"); });
+  $("pg-" + name).classList.add("active");
+  window.scrollTo(0, 0);
+  if (hooks[name]) hooks[name]();
+  try {
+    if (mode === "pop") { }
+    else if (mode === "replace") history.replaceState({ p: name }, "", "#" + name);
+    else history.pushState({ p: name }, "", "#" + name);
+  } catch (e) {}
+}
+window.addEventListener("popstate", function (e) {
+  show((e.state && e.state.p) || "dashboard", "pop");
+});
+
+/* ================= LOGIN ================= */
+var USER = "admin";
+var DEFAULT_PASS = "admin@2026";
+function getPass() { return localStorage.getItem("falcon_password") || DEFAULT_PASS; }
+
+function login() {
+  var u = $("lg-u").value.trim();
+  var p = $("lg-p").value;
+  if (u === USER && p === getPass()) {
+    sessionStorage.setItem("falcon_logged", "1");
+    show("dashboard", "replace");
+  } else {
+    setMsg("lg-msg", "Wrong username or password", false);
+  }
+}
+function forgotPass() {
+  if (!confirm("Reset password to default?\nYour products and orders will not be deleted.")) return;
+  localStorage.removeItem("falcon_password");
+  $("lg-p").value = "";
+  setMsg("lg-msg", "Password reset. Default password: " + DEFAULT_PASS, true);
+}
+function logout() {
+  sessionStorage.removeItem("falcon_logged");
+  show("login", "replace");
+}
+hooks.login = function () {
+  $("lg-u").value = "";
+  $("lg-p").value = "";
+  setMsg("lg-msg", "", false);
+};
+
+/* ================= PRODUCTS ================= */
+var prList = [];
+var prEditId = null;
+
+function prRender() {
+  var box = $("pr-list");
+  box.innerHTML = "";
+  if (!prList.length) { box.appendChild(el("div", "card empty", "No products yet.")); return; }
+  prList.forEach(function (p) {
+    var d = el("div", "card item");
+    var info = el("div");
+    info.appendChild(el("b", "", p.name));
+    info.appendChild(el("div", "muted", "TP+Vat: " + p.tp + "  |  MRP: " + p.mrp));
+    var acts = el("div");
+    var eb = el("button", "small", "Edit");
+    eb.onclick = function () { prStartEdit(p.id); };
+    var db = el("button", "small del", "Delete");
+    db.onclick = function () { prRemove(p.id); };
+    acts.appendChild(eb);
+    acts.appendChild(db);
+    d.appendChild(info);
+    d.appendChild(acts);
+    box.appendChild(d);
+  });
+}
+function prClear() {
+  $("pr-name").value = "";
+  $("pr-tp").value = "";
+  $("pr-mrp").value = "";
+  prEditId = null;
+  $("pr-save").textContent = "Save Product";
+}
+function prSave() {
+  var name = $("pr-name").value.trim();
+  var tp = $("pr-tp").value;
+  var mrp = $("pr-mrp").value;
+  if (!name || tp === "" || mrp === "") { alert("Please fill all fields"); return; }
+  if (prEditId) {
+    prList.forEach(function (p) { if (p.id === prEditId) { p.name = name; p.tp = tp; p.mrp = mrp; } });
+  } else {
+    prList.push({ id: Date.now(), name: name, tp: tp, mrp: mrp });
+  }
+  save("falcon_products", prList);
+  prClear();
+  prRender();
+}
+function prStartEdit(id) {
+  prList.forEach(function (p) {
+    if (p.id === id) {
+      $("pr-name").value = p.name;
+      $("pr-tp").value = p.tp;
+      $("pr-mrp").value = p.mrp;
+    }
+  });
+  prEditId = id;
+  $("pr-save").textContent = "Update Product";
+  window.scrollTo(0, 0);
+}
+function prRemove(id) {
+  if (!confirm("Delete this product?")) return;
+  prList = prList.filter(function (p) { return p.id !== id; });
+  save("falcon_products", prList);
+  prRender();
+}
+hooks.products = function () {
+  prList = load("falcon_products");
+  prClear();
+  prRender();
+};
+
+/* ================= NEW ORDER ================= */
+var noProducts = [];
+var noItems = [];
+var noEditId = null;
+
+hooks.neworder = function () {
+  noProducts = load("falcon_products");
+  noItems = [];
+  noEditId = null;
+  $("no-cust").value = "";
+  $("no-disc").value = 0;
+  $("no-qty").value = 1;
+
+  var sel = $("no-prod");
+  sel.innerHTML = "";
+  if (!noProducts.length) {
+    var o = el("option", "", "No products. Add from Manage Products");
+    o.value = "";
+    sel.appendChild(o);
+  } else {
+    noProducts.forEach(function (p) {
+      var op = el("option", "", p.name + " (" + p.tp + ")");
+      op.value = p.id;
+      sel.appendChild(op);
+    });
+  }
+
+  var eid = localStorage.getItem("falcon_edit_draft");
+  if (eid) {
+    load("falcon_drafts").forEach(function (d) {
+      if (String(d.id) === eid) {
+        noEditId = d.id;
+        noItems = d.items;
+        $("no-cust").value = d.customer || "";
+        $("no-disc").value = d.discount || 0;
+      }
+    });
+    localStorage.removeItem("falcon_edit_draft");
+  }
+  noRender();
+};
+
+function noAdd() {
+  var id = $("no-prod").value;
+  var q = parseInt($("no-qty").value, 10);
+  if (!id) { alert("Please select a product"); return; }
+  if (!q || q < 1) { alert("Enter a valid quantity"); return; }
+  var prod = null;
+  noProducts.forEach(function (p) { if (String(p.id) === String(id)) prod = p; });
+  if (!prod) return;
+  var found = false;
+  noItems.forEach(function (it) {
+    if (String(it.id) === String(prod.id)) { it.qty += q; found = true; }
+  });
+  if (!found) noItems.push({ id: prod.id, name: prod.name, price: Number(prod.tp), mrp: Number(prod.mrp), qty: q });
+  $("no-qty").value = 1;
+  noRender();
+}
+function noChangeQty(i, delta) {
+  noItems[i].qty += delta;
+  if (noItems[i].qty < 1) noItems[i].qty = 1;
+  noRender();
+}
+function noRemove(i) {
+  noItems.splice(i, 1);
+  noRender();
+}
+function noRender() {
+  var box = $("no-items");
+  box.innerHTML = "";
+  if (!noItems.length) box.appendChild(el("div", "card muted", "No items added yet."));
+  noItems.forEach(function (it, i) {
+    var d = el("div", "card item");
+    var left = el("div");
+    left.appendChild(el("b", "", it.name));
+    left.appendChild(el("div", "muted", "Price: " + money(it.price)));
+    var q = el("div", "qctl");
+    var minus = el("button", "", "−");
+    minus.onclick = function () { noChangeQty(i, -1); };
+    var plus = el("button", "", "+");
+    plus.onclick = function () { noChangeQty(i, 1); };
+    q.appendChild(minus);
+    q.appendChild(el("span", "", String(it.qty)));
+    q.appendChild(plus);
+    left.appendChild(q);
+
+    var right = el("div");
+    right.style.textAlign = "right";
+    right.appendChild(el("div", "line", money(it.price * it.qty)));
+    var rm = el("button", "small del", "Remove");
+    rm.style.marginTop = "12px";
+    rm.style.marginLeft = "0";
+    rm.onclick = function () { noRemove(i); };
+    right.appendChild(rm);
+
+    d.appendChild(left);
+    d.appendChild(right);
+    box.appendChild(d);
+  });
+  noCalc();
+}
+function noTotals() {
+  var sub = 0;
+  noItems.forEach(function (it) { sub += it.price * it.qty; });
+  var dp = parseFloat($("no-disc").value) || 0;
+  if (dp < 0) dp = 0;
+  if (dp > 100) dp = 100;
+  var da = sub * dp / 100;
+  return { sub: sub, dp: dp, da: da, total: sub - da };
+}
+function noCalc() {
+  var t = noTotals();
+  $("no-sub").textContent = money(t.sub);
+  $("no-damt").textContent = money(t.da);
+  $("no-tot").textContent = money(t.total);
+}
+function noSaveDraft() {
+  if (!noItems.length) { alert("Add at least one item"); return; }
+  var t = noTotals();
+  var drafts = load("falcon_drafts");
+  var draft = {
+    id: noEditId || Date.now(),
+    customer: $("no-cust").value.trim(),
+    items: noItems,
+    discount: t.dp,
+    subtotal: t.sub,
+    total: t.total,
+    date: new Date().toISOString()
+  };
+  if (noEditId) {
+    drafts = drafts.map(function (d) { return d.id === noEditId ? draft : d; });
+  } else {
+    drafts.push(draft);
+  }
+  save("falcon_drafts", drafts);
+  alert("Draft saved");
+  show("dashboard");
+}
+function noPlace() {
+  var cust = $("no-cust").value.trim();
+  if (!cust) { alert("Please enter customer name"); return; }
+  if (!noItems.length) { alert("Add at least one item"); return; }
+  var t = noTotals();
+  var counter = parseInt(localStorage.getItem("falcon_order_counter") || "0", 10) + 1;
+  localStorage.setItem("falcon_order_counter", String(counter));
+  var no = "ORD-" + ("000" + counter).slice(-4);
+  var orders = load("falcon_orders");
+  orders.push({
+    id: Date.now(),
+    no: no,
+    customer: cust,
+    items: noItems,
+    discount: t.dp,
+    subtotal: t.sub,
+    total: t.total,
+    date: new Date().toISOString()
+  });
+  save("falcon_orders", orders);
+  if (noEditId) {
+    save("falcon_drafts", load("falcon_drafts").filter(function (d) { return d.id !== noEditId; }));
+  }
+  alert("Order placed: " + no);
+  show("dashboard");
+}
+
+/* ================= DRAFT ORDER ================= */
+function drRender() {
+  var box = $("dr-list");
+  box.innerHTML = "";
+  var drafts = load("falcon_drafts").sort(function (a, b) { return b.id - a.id; });
+  if (!drafts.length) { box.appendChild(el("div", "card empty", "No draft orders.")); return; }
+  drafts.forEach(function (d) {
+    var card = el("div", "card");
+    var top = el("div", "top");
+    var left = el("div");
+    left.appendChild(el("div", "cname", d.customer || "No customer name"));
+    var count = 0;
+    d.items.forEach(function (it) { count += it.qty; });
+    left.appendChild(el("div", "muted", d.items.length + " products, " + count + " pcs"));
+    left.appendChild(el("div", "muted", new Date(d.date).toLocaleString()));
+    top.appendChild(left);
+    top.appendChild(el("div", "ctotal", money(d.total)));
+    card.appendChild(top);
+
+    var btns = el("div", "btns");
+    var eb = el("button", "b-edit", "Edit");
+    eb.onclick = function () { drEdit(d.id); };
+    var db = el("button", "b-del", "Delete");
+    db.onclick = function () { drDelete(d.id); };
+    btns.appendChild(eb);
+    btns.appendChild(db);
+    card.appendChild(btns);
+    box.appendChild(card);
+  });
+}
+function drEdit(id) {
+  localStorage.setItem("falcon_edit_draft", String(id));
+  show("neworder");
+}
+function drDelete(id) {
+  if (!confirm("Delete this draft?")) return;
+  save("falcon_drafts", load("falcon_drafts").filter(function (d) { return d.id !== id; }));
+  drRender();
+}
+hooks.draft = drRender;
+
+/* ================= ORDER HISTORY ================= */
+var ohOpen = null;
+
+function ohRow(label, value, bold) {
+  var r = el("div", "drow" + (bold ? " bold" : ""));
+  r.appendChild(el("span", "", label));
+  r.appendChild(el("span", "", value));
+  return r;
+}
+function ohRender() {
+  var box = $("oh-list");
+  box.innerHTML = "";
+  var term = $("oh-q").value.trim().toLowerCase();
+  var orders = load("falcon_orders").sort(function (a, b) { return b.id - a.id; });
+  if (term) {
+    orders = orders.filter(function (o) {
+      return o.customer.toLowerCase().indexOf(term) !== -1 || o.no.toLowerCase().indexOf(term) !== -1;
+    });
+  }
+  if (!orders.length) { box.appendChild(el("div", "card empty", "No orders found.")); return; }
+
+  orders.forEach(function (o) {
+    var card = el("div", "card");
+    var top = el("div", "top");
+    var left = el("div");
+    left.appendChild(el("div", "ono", o.no));
+    left.appendChild(el("div", "cname", o.customer));
+    left.appendChild(el("div", "muted", new Date(o.date).toLocaleString()));
+    top.appendChild(left);
+    top.appendChild(el("div", "ctotal", money(o.total)));
+    card.appendChild(top);
+
+    if (ohOpen === o.id) {
+      var det = el("div", "detail");
+      o.items.forEach(function (it) {
+        det.appendChild(ohRow(it.name + "  (" + money(it.price) + " x " + it.qty + ")", money(it.price * it.qty), false));
+      });
+      det.appendChild(ohRow("Subtotal", money(o.subtotal), false));
+      det.appendChild(ohRow("Discount (" + o.discount + "%)", "- " + money(o.subtotal - o.total), false));
+      det.appendChild(ohRow("Total", money(o.total), true));
+      card.appendChild(det);
+    }
+
+    var btns = el("div", "btns");
+    var vb = el("button", "b-view", ohOpen === o.id ? "Hide" : "Details");
+    vb.onclick = function () { ohOpen = (ohOpen === o.id) ? null : o.id; ohRender(); };
+    var pb = el("button", "b-print", "Print / PDF");
+    pb.onclick = function () { ohPdf(o); };
+    var db = el("button", "b-del", "Delete");
+    db.onclick = function () { ohRemove(o.id); };
+    btns.appendChild(vb);
+    btns.appendChild(pb);
+    btns.appendChild(db);
+    card.appendChild(btns);
+    box.appendChild(card);
+  });
+}
+function ohRemove(id) {
+  if (!confirm("Delete this order permanently?")) return;
+  save("falcon_orders", load("falcon_orders").filter(function (o) { return o.id !== id; }));
+  ohRender();
+}
+hooks.history = function () {
+  ohOpen = null;
+  $("oh-q").value = "";
+  ohRender();
+};
+
+/* ---------- PDF (works without the browser print function) ---------- */
+function wrapText(ctx, text, maxW) {
+  var words = String(text).split(/\s+/), lines = [], line = "";
+  words.forEach(function (w) {
+    while (ctx.measureText(w).width > maxW && w.length > 1) {
+      var cut = w.length - 1;
+      while (cut > 1 && ctx.measureText(w.slice(0, cut)).width > maxW) cut--;
+      if (line) { lines.push(line); line = ""; }
+      lines.push(w.slice(0, cut));
+      w = w.slice(cut);
+    }
+    var test = line ? line + " " + w : w;
+    if (ctx.measureText(test).width <= maxW) line = test;
+    else { if (line) lines.push(line); line = w; }
+  });
+  if (line) lines.push(line);
+  return lines.length ? lines : [""];
+}
+
+function drawInvoice(o) {
+  var PW = 1240, PH = 1754, MX = 90, pages = [], cur, ctx, y;
+  var NAVY = "#2a5078", GREY = "#f5f6fa", INK = "#1f2d5c";
+  var colP = PW - MX - 330, colQ = PW - MX - 190, colA = PW - MX - 16;
+  var prodW = colP - MX - 16 - 130;
+
+  function newPage() {
+    cur = document.createElement("canvas");
+    cur.width = PW; cur.height = PH;
+    ctx = cur.getContext("2d");
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, PW, PH);
+    pages.push(cur);
+    y = 130;
+  }
+  function tableHead() {
+    ctx.fillStyle = GREY; ctx.fillRect(MX, y, PW - 2 * MX, 64);
+    ctx.fillStyle = NAVY; ctx.font = "bold 28px sans-serif"; ctx.textBaseline = "middle";
+    ctx.textAlign = "left"; ctx.fillText("Product", MX + 16, y + 32);
+    ctx.textAlign = "right";
+    ctx.fillText("Price", colP, y + 32);
+    ctx.fillText("Qty", colQ, y + 32);
+    ctx.fillText("Amount", colA, y + 32);
+    ctx.textBaseline = "alphabetic";
+    y += 64;
+  }
+
+  newPage();
+  ctx.fillStyle = NAVY; ctx.font = "bold 64px sans-serif"; ctx.textAlign = "left";
+  ctx.fillText("INVOICE", MX, y);
+  ctx.textAlign = "right"; ctx.font = "bold 36px sans-serif";
+  ctx.fillText(o.no, PW - MX, y);
+  y += 30;
+  ctx.fillStyle = NAVY; ctx.fillRect(MX, y, PW - 2 * MX, 6);
+  y += 64;
+  ctx.fillStyle = INK; ctx.textAlign = "left"; ctx.font = "32px sans-serif";
+  wrapText(ctx, "Customer: " + o.customer, PW - 2 * MX).forEach(function (l) { ctx.fillText(l, MX, y); y += 44; });
+  ctx.fillStyle = "#6b7694"; ctx.font = "28px sans-serif";
+  ctx.fillText("Date: " + new Date(o.date).toLocaleString(), MX, y);
+  y += 56;
+  tableHead();
+
+  o.items.forEach(function (it) {
+    ctx.font = "28px sans-serif";
+    var lines = wrapText(ctx, it.name, prodW);
+    var rowH = lines.length * 38 + 28;
+    if (y + rowH > PH - 140) { newPage(); tableHead(); }
+    ctx.font = "28px sans-serif";
+    ctx.fillStyle = INK; ctx.textAlign = "left";
+    lines.forEach(function (l, i) { ctx.fillText(l, MX + 16, y + 36 + i * 38); });
+    ctx.textAlign = "right";
+    ctx.fillText(money(it.price), colP, y + 36);
+    ctx.fillText(String(it.qty), colQ, y + 36);
+    ctx.fillText(money(it.price * it.qty), colA, y + 36);
+    ctx.fillStyle = "#e3e8f2"; ctx.fillRect(MX, y + rowH - 2, PW - 2 * MX, 2);
+    y += rowH;
+  });
+
+  if (y + 260 > PH - 100) newPage();
+  y += 44;
+  var lx = PW - MX - 520, vx = PW - MX - 16;
+  function trow(label, value, bold) {
+    ctx.font = (bold ? "bold 38px" : "30px") + " sans-serif";
+    ctx.fillStyle = bold ? NAVY : INK;
+    ctx.textAlign = "left"; ctx.fillText(label, lx, y);
+    ctx.textAlign = "right"; ctx.fillText(value, vx, y);
+    if (!bold) y += 46;
+  }
+  trow("Subtotal", money(o.subtotal), false);
+  trow("Discount (" + o.discount + "%)", "- " + money(o.subtotal - o.total), false);
+  ctx.fillStyle = NAVY; ctx.fillRect(lx, y - 26, vx - lx, 3);
+  y += 30;
+  trow("Total", money(o.total), true);
+
+  if (pages.length > 1) {
+    pages.forEach(function (p, i) {
+      var c = p.getContext("2d");
+      c.font = "22px sans-serif"; c.fillStyle = "#8a93ad"; c.textAlign = "center";
+      c.fillText("Page " + (i + 1) + " of " + pages.length, PW / 2, PH - 60);
+    });
+  }
+  return pages;
+}
+
+function buildPdf(pages) {
+  var enc = new TextEncoder(), chunks = [], offset = 0, offs = [];
+  function push(d) {
+    if (typeof d === "string") d = enc.encode(d);
+    chunks.push(d);
+    offset += d.length;
+  }
+  function begin(n) { offs[n] = offset; push(n + " 0 obj\n"); }
+  var n = pages.length;
+  push("%PDF-1.4\n");
+  begin(1); push("<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+  var kids = [];
+  for (var i = 0; i < n; i++) kids.push((3 + i * 3) + " 0 R");
+  begin(2); push("<< /Type /Pages /Kids [" + kids.join(" ") + "] /Count " + n + " >>\nendobj\n");
+  pages.forEach(function (p, i) {
+    var po = 3 + i * 3, co = 4 + i * 3, io = 5 + i * 3;
+    var b64 = p.toDataURL("image/jpeg", 0.9).split(",")[1];
+    var bin = atob(b64), u8 = new Uint8Array(bin.length);
+    for (var k = 0; k < bin.length; k++) u8[k] = bin.charCodeAt(k);
+    begin(po);
+    push("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im0 " + io + " 0 R >> >> /Contents " + co + " 0 R >>\nendobj\n");
+    var cs = "q\n595 0 0 842 0 0 cm\n/Im0 Do\nQ\n";
+    begin(co);
+    push("<< /Length " + cs.length + " >>\nstream\n" + cs + "endstream\nendobj\n");
+    begin(io);
+    push("<< /Type /XObject /Subtype /Image /Width " + p.width + " /Height " + p.height + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + u8.length + " >>\nstream\n");
+    push(u8);
+    push("\nendstream\nendobj\n");
+  });
+  var total = 2 + 3 * n, xs = offset;
+  var x = "xref\n0 " + (total + 1) + "\n0000000000 65535 f \n";
+  for (var j = 1; j <= total; j++) x += ("0000000000" + offs[j]).slice(-10) + " 00000 n \n";
+  push(x);
+  push("trailer\n<< /Size " + (total + 1) + " /Root 1 0 R >>\nstartxref\n" + xs + "\n%%EOF");
+  return new Blob(chunks, { type: "application/pdf" });
+}
+
+async function ohPdf(o) {
+  toast("Creating PDF...");
+  try {
+    var blob = buildPdf(drawInvoice(o));
+    var st = await saveBlob(blob, "Falcon-" + o.no + ".pdf", "application/pdf", false);
+    if (st === "cancelled") return;
+    toast(st === "shared" ? "PDF ready" : st === "saved" ? "PDF saved" : "PDF saved to Downloads");
+  } catch (e) {
+    alert("Could not create the PDF");
+  }
+}
+
+/* ================= SETTINGS ================= */
+function stToggle(id) { $(id).classList.toggle("open"); }
+
+function stChangePass() {
+  var cur = $("st-cur").value;
+  var nw = $("st-nw").value;
+  var cf = $("st-cf").value;
+  if (cur !== getPass()) { setMsg("st-pmsg", "Current password is wrong", false); return; }
+  if (nw.length < 6) { setMsg("st-pmsg", "New password must be at least 6 characters", false); return; }
+  if (nw !== cf) { setMsg("st-pmsg", "New passwords do not match", false); return; }
+  localStorage.setItem("falcon_password", nw);
+  $("st-cur").value = "";
+  $("st-nw").value = "";
+  $("st-cf").value = "";
+  setMsg("st-pmsg", "Password changed successfully", true);
+}
+
+function stShowLast() {
+  var d = localStorage.getItem("falcon_last_backup");
+  $("st-last").textContent = d ? "Last backup: " + new Date(d).toLocaleString() : "No backup taken yet.";
+}
+
+async function stExport(forceDownload) {
+  var now = new Date();
+  var data = {
+    app: "Falcon",
+    version: 1,
+    exported: now.toISOString(),
+    products: load("falcon_products"),
+    drafts: load("falcon_drafts"),
+    orders: load("falcon_orders"),
+    counter: parseInt(localStorage.getItem("falcon_order_counter") || "0", 10)
+  };
+  var name = "Falcon-3.0-backup-" + now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate()) + ".json";
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  var st = await saveBlob(blob, name, "application/json", forceDownload);
+  if (st === "cancelled") { setMsg("st-bmsg", "Cancelled", false); return; }
+  localStorage.setItem("falcon_last_backup", now.toISOString());
+  stShowLast();
+  if (st === "saved") setMsg("st-bmsg", "Backup saved", true);
+  else if (st === "shared") setMsg("st-bmsg", "Backup shared/saved from the menu", true);
+  else if (st === "downloaded") setMsg("st-bmsg", "Saved to Downloads: " + name, true);
+  else setMsg("st-bmsg", "This browser can't ask for a location here, so the file was saved to Downloads: " + name + "\nTip: Chrome > Settings > Downloads > turn on \"Ask where to save files\".", true);
+}
+
+function stImport(input) {
+  var f = input.files[0];
+  if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function () {
+    var data;
+    try { data = JSON.parse(reader.result); }
+    catch (e) { setMsg("st-bmsg", "This is not a valid backup file", false); input.value = ""; return; }
+    if (!data || data.app !== "Falcon") {
+      setMsg("st-bmsg", "This file is not a Falcon backup", false);
+      input.value = "";
+      return;
+    }
+    if (!confirm("This will replace all current products, orders and drafts. Continue?")) {
+      input.value = "";
+      return;
+    }
+    save("falcon_products", Array.isArray(data.products) ? data.products : []);
+    save("falcon_drafts", Array.isArray(data.drafts) ? data.drafts : []);
+    save("falcon_orders", Array.isArray(data.orders) ? data.orders : []);
+    localStorage.setItem("falcon_order_counter", String(parseInt(data.counter, 10) || 0));
+    input.value = "";
+    setMsg("st-bmsg", "Backup restored successfully", true);
+  };
+  reader.readAsText(f);
+}
+hooks.settings = function () {
+  $("st-cur").value = "";
+  $("st-nw").value = "";
+  $("st-cf").value = "";
+  setMsg("st-pmsg", "", false);
+  setMsg("st-bmsg", "", false);
+  stShowLast();
+};
+
+/* ================= START ================= */
+show(isLogged() ? "dashboard" : "login", "replace");
+</script>
+</body>
+</html>
