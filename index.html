@@ -411,7 +411,7 @@ function forgotPass() {
   if (!confirm("Reset password to default?\nYour products and orders will not be deleted.")) return;
   localStorage.removeItem("falcon_password");
   $("lg-p").value = "";
-  setMsg("lg-msg", "Password reset. Default password: " + DEFAULT_PASS, true);
+  setMsg("lg-msg", "Password has been reset.", true);
 }
 function logout() {
   sessionStorage.removeItem("falcon_logged");

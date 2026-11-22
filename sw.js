@@ -1,4 +1,4 @@
-var CACHE = "falcon-v1";
+var CACHE = "falcon-v2";
 
 self.addEventListener("install", function (e) {
   e.waitUntil(
